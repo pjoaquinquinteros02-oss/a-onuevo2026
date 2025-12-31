@@ -17,13 +17,13 @@
             height: 100vh;
             width: 100vw;
             display: flex;
-            justify-content: center; /* Centrado horizontal */
-            align-items: center;     /* Centrado vertical */
+            justify-content: center;
+            align-items: center;
             font-family: 'Times New Roman', Times, serif; 
             color: #000;
         }
 
-        /* Contenedor Principal Centrado */
+        /* Contenedor Principal */
         .container {
             text-align: center;
             z-index: 10;
@@ -32,76 +32,79 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 90%; 
-            max-width: 1400px; /* Permitimos que sea más ancho */
+            width: 100%; 
         }
 
-        /* --- TEXTOS PEQUEÑOS (FALTAN / PARA EL 2026) --- */
-        /* CORRECCIÓN: Espaciado simétrico arriba y abajo */
-        .label-top, .label-bottom {
-            font-size: 1.8vw; 
+        /* --- TEXTOS SUPERIOR E INFERIOR --- */
+        .label-top {
+            font-size: 1.5vw; 
             letter-spacing: 0.3em;
             text-transform: uppercase;
-            margin: 1.5vw 0; /* Margen igual arriba y abajo de los textos */
+            margin-bottom: 2vh; /* Separación clara del contador */
         }
 
-        /* --- EL CONTADOR GIGANTE --- */
+        .label-bottom {
+            font-size: 1.5vw;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-top: 4vh; /* Separación clara para que no toque los MIN/SEG */
+        }
+
+        /* --- EL CONTADOR --- */
         .counter-wrapper {
             display: flex;
-            align-items: baseline;
+            align-items: flex-start; /* Alineación superior para controlar altura */
             justify-content: center;
             font-family: "parfumerie-script", sans-serif; 
             font-weight: 400;
             font-style: normal;
-            /* AUMENTO DE TAMAÑO SIGNIFICATIVO */
-            font-size: 38vw; 
-            line-height: 0.8; /* Ajuste para que no ocupe tanta altura innecesaria */
+            font-size: 32vw; /* Reduje un poco (de 38 a 32) para ganar orden */
+            line-height: 0.9; 
             margin: 0;
-            padding: 0 1vw; 
-            width: 100%;
+            padding: 0;
         }
 
         .digit-group {
-            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 0 0.5vw;
+            position: relative;
+            /* Margen lateral para que los números cursivos no se toquen */
+            margin: 0 1vw; 
         }
 
-        /* Los dos puntos : (Ajustados al nuevo tamaño) */
+        /* Ajuste fino para la cursiva: movemos el número un poco a la derecha */
+        .digit-group span.number {
+            display: block;
+            margin-right: 0.1em; /* Compensar la inclinación */
+            z-index: 2;
+        }
+
+        /* Los dos puntos : */
         .separator {
             font-family: "parfumerie-script", sans-serif;
-            font-size: 20vw; /* Más grandes también */
-            margin: 0 0.5vw;
-            transform: translateY(-5vw); /* Ajuste de altura */
+            font-size: 18vw;
+            margin: 0 1vw;
+            transform: translateY(-2vw); /* Subirlos un poco */
+            opacity: 0.8;
         }
 
         /* --- ETIQUETAS HS / MIN / SEG --- */
+        /* Ahora ocupan espacio real debajo del número */
         .sub-label {
-            position: absolute;
-            /* Bajadas más para no tocar los números gigantes */
-            bottom: -2vw; 
             font-family: 'Times New Roman', serif;
             font-size: 1.2vw;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            width: 100%;
-            text-align: center;
-        }
-        
-        .digit-group span.number {
-            z-index: 2;
-            position: relative;
-            /* Pequeño ajuste para que la cursiva no se corte arriba */
-            top: 2vw; 
+            margin-top: -3vw; /* Truco visual: las subimos para que queden cerca del número */
+            z-index: 3;
         }
 
         /* --- MENSAJE FINAL --- */
         #mensaje-final {
             display: none;
             font-family: 'Times New Roman', serif;
-            font-size: 10vw; /* Más grande el mensaje final también */
+            font-size: 10vw;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             text-align: center;
@@ -119,34 +122,26 @@
             to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
-        /* --- NUEVA ANIMACIÓN DE NIEVE CON "SAZÓN" --- */
+        /* --- NIEVE --- */
         .snowflake {
             position: absolute;
             pointer-events: none;
-            /* Usamos una animación compuesta para el balanceo */
             animation-name: fall-sway;
             animation-timing-function: ease-in-out;
             animation-iteration-count: infinite;
-            will-change: transform; /* Optimización de rendimiento */
+            will-change: transform;
         }
 
-        /* Keyframes para caer balanceándose suavemente */
         @keyframes fall-sway {
             0% {
                 transform: translateY(-20vh) translateX(0px) rotate(0deg);
                 opacity: 0;
             }
-            10% {
-                 opacity: var(--final-opacity); /* Aparece suavemente */
-            }
-            50% {
-                /* Se mueve hacia un lado a mitad de camino */
-                transform: translateY(50vh) translateX(var(--sway-amount)) rotate(180deg);
-            }
+            10% { opacity: var(--final-opacity); }
+            50% { transform: translateY(50vh) translateX(var(--sway-amount)) rotate(180deg); }
             100% {
-                /* Termina abajo, volviendo un poco al centro */
                 transform: translateY(120vh) translateX(calc(var(--sway-amount) / 2)) rotate(360deg);
-                opacity: 0.3; /* Se desvanece al final */
+                opacity: 0.3;
             }
         }
 
@@ -186,7 +181,7 @@
     </div>
 
     <script>
-        // --- 1. CONFIGURACIÓN NIEVE CON SAZÓN ---
+        // --- 1. CONFIGURACIÓN NIEVE ---
         const snowflakeImages = [
             'tailpiece1-1600 2.png',
             'tailpiece1-1600 3.png',
@@ -195,60 +190,63 @@
             'tailpiece1-1600 9.png'
         ];
 
-        function createSnowflake() {
+        function createSnowflake(initial = false) {
             const img = document.createElement('img');
             img.src = snowflakeImages[Math.floor(Math.random() * snowflakeImages.length)];
             img.classList.add('snowflake');
             
-            // --- SAZÓN: Profundidad y Variedad ---
-            
-            // Determinamos si es un copo de "primer plano" o de "fondo"
+            // Lógica de capas (Fondo vs Frente)
             const layer = Math.random();
             let size, duration, opacity, zIndex, swayAmount;
 
             if (layer > 0.6) { 
-                // PRIMER PLANO: Grandes, más rápidos, más nítidos, más movimiento
-                size = Math.random() * 50 + 50; // 50px a 100px
-                duration = Math.random() * 10 + 10; // 10s a 20s
-                opacity = Math.random() * 0.3 + 0.7; // 0.7 a 1.0 de opacidad
+                size = Math.random() * 50 + 50; 
+                duration = Math.random() * 10 + 10; 
+                opacity = Math.random() * 0.3 + 0.7; 
                 zIndex = 5;
-                swayAmount = (Math.random() * 100 - 50) + 'px'; // Balanceo fuerte (-50px a 50px)
+                swayAmount = (Math.random() * 100 - 50) + 'px'; 
             } else {
-                // FONDO: Pequeños, lentos, tenues, movimiento sutil (Elegancia)
-                size = Math.random() * 30 + 15; // 15px a 45px
-                duration = Math.random() * 15 + 20; // 20s a 35s
-                opacity = Math.random() * 0.4 + 0.2; // 0.2 a 0.6 de opacidad
+                size = Math.random() * 30 + 15; 
+                duration = Math.random() * 15 + 20; 
+                opacity = Math.random() * 0.4 + 0.2; 
                 zIndex = 1;
-                swayAmount = (Math.random() * 40 - 20) + 'px'; // Balanceo suave
+                swayAmount = (Math.random() * 40 - 20) + 'px'; 
             }
 
-            // Aplicar estilos variables
             img.style.width = size + 'px';
             img.style.left = Math.random() * 100 + 'vw';
             img.style.zIndex = zIndex;
             img.style.animationDuration = duration + 's';
-            
-            // Variables CSS para la animación personalizada de cada copo
             img.style.setProperty('--final-opacity', opacity);
             img.style.setProperty('--sway-amount', swayAmount);
 
-            // RETRASO NEGATIVO: Para que empiecen en diferentes puntos de la caída
-            img.style.animationDelay = -(Math.random() * duration) + 's';
+            // --- CORRECCIÓN DE "EMPIEZA A LA MITAD" ---
+            if (initial) {
+                // Si es la carga inicial, posicionamos el copo en cualquier lugar verticalmente (0 a 100vh)
+                // y forzamos que la animación empiece ya avanzada
+                img.style.top = Math.random() * 100 + 'vh';
+                img.style.animationDelay = '0s'; 
+            } else {
+                // Comportamiento normal: empieza arriba (-150px definido en CSS)
+                img.style.top = '-150px';
+                img.style.animationDelay = '0s';
+            }
             
             document.body.appendChild(img);
-
-            // Limpieza
             setTimeout(() => { img.remove(); }, (duration + 1) * 1000);
         }
 
-        // Creamos muchos copos al inicio para llenar la pantalla rápido
-        for(let i=0; i<30; i++) createSnowflake();
+        // --- INICIO EXPLOSIVO: LLENAR PANTALLA YA ---
+        // Generamos 50 copos distribuidos por toda la pantalla al instante
+        for(let i=0; i<50; i++) {
+            createSnowflake(true); // true = es inicial
+        }
 
-        // Frecuencia de generación (más rápido para más densidad)
-        setInterval(createSnowflake, 300);
+        // Luego seguimos creando copos nuevos desde arriba
+        setInterval(() => createSnowflake(false), 300);
 
 
-        // --- 2. LÓGICA DEL CONTADOR (Sin cambios) ---
+        // --- 2. LÓGICA DEL CONTADOR ---
         const nextYear = new Date().getFullYear() + 1;
         document.getElementById('year').innerText = nextYear;
         const newYearTime = new Date(`January 01 ${nextYear} 00:00:00`);
@@ -260,8 +258,7 @@
             if (diff <= 0) {
                 document.getElementById('main-container').style.display = 'none';
                 document.getElementById('mensaje-final').style.display = 'block';
-                // Mucha más nieve al final
-                setInterval(createSnowflake, 100);
+                setInterval(() => createSnowflake(false), 100);
                 return;
             }
 
