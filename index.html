@@ -126,44 +126,6 @@
             100% { transform: translateY(120vh) translateX(var(--sway)) rotate(360deg); opacity: 0.2; }
         }
 
-        /* --- BRILLITOS (SPARKLES) EN LOS NÚMEROS --- */
-        .sparkle {
-            position: absolute;
-            width: 2vw; /* Tamaño del brillo relativo a la pantalla */
-            height: 2vw;
-            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 20; /* Encima de los números */
-            opacity: 0;
-            animation: twinkle 1.5s ease-in-out forwards;
-            mix-blend-mode: overlay; /* Se mezcla bonito con el negro */
-        }
-
-        /* Forma de estrella para el brillo usando CSS */
-        .sparkle::after {
-            content: '';
-            position: absolute;
-            top: 50%; left: 0; right: 0; height: 10%;
-            background: white;
-            transform: translateY(-50%);
-            box-shadow: 0 0 10px white;
-        }
-        .sparkle::before {
-            content: '';
-            position: absolute;
-            left: 50%; top: 0; bottom: 0; width: 10%;
-            background: white;
-            transform: translateX(-50%);
-            box-shadow: 0 0 10px white;
-        }
-
-        @keyframes twinkle {
-            0% { transform: scale(0) rotate(0deg); opacity: 0; }
-            50% { transform: scale(1.2) rotate(45deg); opacity: 1; }
-            100% { transform: scale(0) rotate(90deg); opacity: 0; }
-        }
-
     </style>
 </head>
 <body>
@@ -239,7 +201,7 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // --- 3. NUEVO: FRASES ROTATIVAS (Deseos) ---
+        // --- 3. FRASES ROTATIVAS (Deseos) ---
         const labelBottom = document.getElementById('dynamic-label');
         const defaultText = `PARA EL ${nextYear}`;
         
@@ -275,32 +237,6 @@
 
         // Cambiar texto cada 8 segundos
         setInterval(rotateText, 8000);
-
-        // --- 4. NUEVO: BRILLOS EN LOS NÚMEROS (Sparkles) ---
-        const counterBox = document.getElementById('counter-box');
-
-        function createSparkle() {
-            const sparkle = document.createElement('div');
-            sparkle.classList.add('sparkle');
-            
-            // Posición aleatoria DENTRO del área de los números
-            // Usamos porcentajes relativos al contenedor
-            const randomX = Math.random() * 80 + 10; // Entre 10% y 90% ancho
-            const randomY = Math.random() * 60 + 20; // Entre 20% y 80% alto
-            
-            sparkle.style.left = randomX + '%';
-            sparkle.style.top = randomY + '%';
-            
-            counterBox.appendChild(sparkle);
-            
-            // Eliminar después de la animación
-            setTimeout(() => {
-                sparkle.remove();
-            }, 1500);
-        }
-
-        // Crear un brillo cada 2 segundos aprox
-        setInterval(createSparkle, 2000);
 
     </script>
 </body>
