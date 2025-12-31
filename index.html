@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cuenta Regresiva Año Nuevo</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #000;
+            /* Aquí cargamos tu imagen de fondo */
+            background-image: url('fondo.jpg'); 
+            background-size: cover;
+            background-position: center;
+            font-family: 'Arial', sans-serif; /* Puedes cambiar esto */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
+
+        /* El contenedor del contador */
+        #contador {
+            font-size: 15vw; /* Tamaño gigante responsivo */
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(0,0,0,0.5);
+            z-index: 10;
+        }
+
+        /* Mensaje final */
+        #mensaje {
+            display: none;
+            font-size: 10vw;
+            text-align: center;
+            animation: popIn 1s ease forwards;
+            z-index: 10;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- EFECTO DE NIEVE (CSS PURO) --- */
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: white;
+            font-size: 1em;
+            font-family: Arial;
+            text-shadow: 0 0 1px #000;
+            user-select: none;
+            z-index: 1;
+            animation-name: snowfall;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+        }
+
+        @keyframes snowfall {
+            0% { transform: translateY(-10vh) translateX(0); opacity: 1; }
+            100% { transform: translateY(110vh) translateX(20px); opacity: 0.8; }
+        }
+
+        /* Capa oscura opcional para que se lean mejor los números */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3); /* Ajusta la opacidad aquí */
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+    <div id="contador">00:00:00</div>
+    <div id="mensaje">¡FELIZ<br>AÑO NUEVO!</div>
+
+    <script>
+        // --- CONFIGURACIÓN DE LA NIEVE ---
+        function createSnow() {
+            const snowContainer = document.body;
+            const snowflake = document.createElement('div');
+            snowflake.innerHTML = '❄'; // Puedes cambiar esto por un punto '•' si prefieres minimalismo
+            snowflake.classList.add('snowflake');
+            
+            // Aleatoriedad
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.fontSize = (Math.random() * 20 + 10) + 'px'; // Tamaño entre 10 y 30px
+            snowflake.style.animationDuration = (Math.random() * 5 + 5) + 's'; // Velocidad entre 5 y 10s
+            snowflake.style.opacity = Math.random();
+            
+            snowContainer.appendChild(snowflake);
+
+            // Eliminar el copo cuando termine de caer para no saturar la memoria
+            setTimeout(() => {
+                snowflake.remove();
+            }, 10000);
+        }
+
+        // Crear un copo cada 100 milisegundos
+        setInterval(createSnow, 100);
+
+        // --- LÓGICA DEL CONTADOR ---
+        const contadorElement = document.getElementById('contador');
+        const mensajeElement = document.getElementById('mensaje');
+
+        // FECHA OBJETIVO: 1 de Enero del próximo año a las 00:00:00
+        const currentYear = new Date().getFullYear();
+        const nextYear = currentYear + 1;
+        const newYearTime = new Date(`January 01 ${nextYear} 00:00:00`);
+
+        function updateCountdown() {
+            const currentTime = new Date();
+            const diff = newYearTime - currentTime;
+
+            if (diff <= 0) {
+                // Llegó el año nuevo
+                contadorElement.style.display = 'none';
+                mensajeElement.style.display = 'block';
+                return;
+            }
+
+            const h = Math.floor((diff / 1000 / 60 / 60) % 24);
+            const m = Math.floor((diff / 1000 / 60) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+
+            // Formato con ceros a la izquierda
+            const hStr = h < 10 ? '0' + h : h;
+            const mStr = m < 10 ? '0' + m : m;
+            const sStr = s < 10 ? '0' + s : s;
+
+            contadorElement.innerText = `${hStr}:${mStr}:${sStr}`;
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown(); // Ejecutar una vez al inicio
+    </script>
+</body>
+</html>
