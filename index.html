@@ -3,15 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Cuenta Regresiva 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://use.typekit.net/jfu8jju.css">
     
     <style>
-        /* --- FUENTES --- */
-        @font-face {
-            font-family: 'Parfumerie Script';
-            src: url('Parfumerie.otf'); /* Asegúrate que el nombre coincida con tu archivo */
-        }
-
         /* --- ESTILOS GENERALES --- */
         body {
             margin: 0;
@@ -22,8 +17,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-family: 'Times New Roman', Times, serif;
-            color: #000; /* Color del texto */
+            /* Times New Roman para textos generales por defecto */
+            font-family: 'Times New Roman', Times, serif; 
+            color: #000;
         }
 
         /* Contenedor Principal Centrado */
@@ -39,17 +35,19 @@
 
         /* --- TEXTOS PEQUEÑOS (FALTAN / PARA EL 2026) --- */
         .label-top {
-            font-size: 1.5vw; /* Escala con la pantalla */
+            font-size: 1.5vw; 
             letter-spacing: 0.3em;
             text-transform: uppercase;
-            margin-bottom: -1vw; /* Ajuste para acercarlo a los números */
+            margin-bottom: -2vw; /* Acercamos el texto al número */
+            position: relative;
+            top: 1vw;
         }
 
         .label-bottom {
             font-size: 1.5vw;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            margin-top: 2vw;
+            margin-top: 1vw;
         }
 
         /* --- EL CONTADOR (NÚMEROS) --- */
@@ -57,10 +55,14 @@
             display: flex;
             align-items: baseline;
             justify-content: center;
-            font-family: 'Parfumerie Script', 'Pinyon Script', cursive; /* Usa tu fuente o la alternativa */
-            font-size: 25vw; /* TAMAÑO GIGANTE como en tu diseño */
+            /* AQUÍ USAMOS TU FUENTE DE ADOBE */
+            font-family: "parfumerie-script", sans-serif; 
+            font-weight: 400;
+            font-style: normal;
+            font-size: 28vw; /* Tamaño gigante ajustado */
             line-height: 1;
             margin: 0;
+            padding-top: 2vw; /* Espacio para que no corte la parte superior de la cursiva */
         }
 
         .digit-group {
@@ -72,17 +74,17 @@
 
         /* Los dos puntos : */
         .separator {
+            font-family: "parfumerie-script", sans-serif;
             font-size: 15vw;
-            margin: 0 1vw;
-            transform: translateY(-2vw); /* Subir un poco los dos puntos */
+            margin: 0 0.5vw;
+            transform: translateY(-3vw); /* Ajuste de altura de los dos puntos */
         }
 
         /* --- ETIQUETAS HS / MIN / SEG --- */
-        /* Estas van DEBAJO de los números, pequeñas como en tu diseño */
         .sub-label {
             position: absolute;
-            bottom: 2vw; /* Ajusta esto para subirlas o bajarlas */
-            font-family: 'Times New Roman', serif;
+            bottom: 3vw; 
+            font-family: 'Times New Roman', serif; /* Times New Roman para estas etiquetas */
             font-size: 1vw;
             letter-spacing: 0.1em;
             text-transform: uppercase;
@@ -90,7 +92,6 @@
             text-align: center;
         }
         
-        /* Ajuste específico para que las etiquetas no se superpongan al número cursivo */
         .digit-group span {
             z-index: 2;
         }
@@ -102,27 +103,28 @@
             font-size: 8vw;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            animation: fadeIn 2s ease;
+            text-align: center;
+            animation: fadeIn 3s ease;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
+            from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
 
         /* --- NIEVE (IMÁGENES) --- */
         .snowflake {
             position: absolute;
-            top: -100px;
+            top: -150px; /* Empiezan más arriba para no aparecer de golpe */
             z-index: 1;
-            opacity: 0.8;
-            pointer-events: none;
+            opacity: 0.9;
+            pointer-events: none; /* Click a través de la nieve */
             animation: fall linear infinite;
         }
 
         @keyframes fall {
             0% { transform: translateY(0) rotate(0deg); }
-            100% { transform: translateY(110vh) rotate(360deg); }
+            100% { transform: translateY(120vh) rotate(360deg); }
         }
 
     </style>
@@ -166,35 +168,36 @@
         // --- 1. CONFIGURACIÓN NIEVE ---
         function createSnowflake() {
             const img = document.createElement('img');
-            img.src = 'copo.png'; // IMPORTANTE: Tu imagen debe llamarse así
+            img.src = 'copo.png'; // Asegúrate que tu imagen se llame así
             img.classList.add('snowflake');
             
-            // Tamaños variados para profundidad
-            const size = Math.random() * 50 + 30; // Entre 30px y 80px
+            // Tamaños variados (un poco más grandes para que se luzcan)
+            const size = Math.random() * 60 + 20; 
             img.style.width = size + 'px';
             
             // Posición horizontal aleatoria
             img.style.left = Math.random() * 100 + 'vw';
             
-            // Velocidad aleatoria (LENTO como pediste)
-            const duration = Math.random() * 10 + 10; // Entre 10 y 20 segundos
+            // Velocidad LENTA (entre 15 y 25 segundos en caer)
+            const duration = Math.random() * 10 + 15; 
             img.style.animationDuration = duration + 's';
             
             document.body.appendChild(img);
 
-            // Eliminar al terminar para no saturar
+            // Limpieza de memoria
             setTimeout(() => {
                 img.remove();
             }, duration * 1000);
         }
 
-        // Crear un copo cada 500ms (ajusta para más o menos nieve)
-        setInterval(createSnowflake, 500);
+        // Frecuencia de nieve (cada 400ms sale un copo nuevo)
+        setInterval(createSnowflake, 400);
 
 
         // --- 2. LÓGICA DEL CONTADOR ---
         const nextYear = new Date().getFullYear() + 1;
         document.getElementById('year').innerText = nextYear;
+        // FECHA OBJETIVO: 1 de Enero 00:00:00
         const newYearTime = new Date(`January 01 ${nextYear} 00:00:00`);
 
         function updateCountdown() {
@@ -209,10 +212,9 @@
             const msg = document.getElementById('mensaje-final');
 
             if (diff <= 0) {
+                // CUANDO LLEGA A CERO
                 container.style.display = 'none';
-                msg.style.display = 'flex';
-                // Efecto extra: mucha nieve al final
-                setInterval(createSnowflake, 100); 
+                msg.style.display = 'block';
                 return;
             }
 
@@ -220,8 +222,8 @@
             const m = Math.floor((diff / 1000 / 60) % 60);
             const s = Math.floor((diff / 1000) % 60);
 
-            // Actualizar texto
-            hEl.innerText = h < 10 ? '0' + h : h; // Agrega cero si es menor a 10
+            // Actualizar texto con ceros a la izquierda
+            hEl.innerText = h; // Las horas a veces quedan mejor sin el 0 si es un solo dígito, pero puedes poner h < 10 ? '0' + h : h;
             mEl.innerText = m < 10 ? '0' + m : m;
             sEl.innerText = s < 10 ? '0' + s : s;
         }
