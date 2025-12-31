@@ -46,9 +46,10 @@
             font-size: 1.5vw;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            /* Mantenemos el margen generoso para que no se pegue */
             margin-top: 8vw; 
             z-index: 10;
+            min-height: 1.5vw; /* Reserva espacio para evitar saltos */
+            transition: opacity 1s ease-in-out; /* Fade suave para el texto */
         }
 
         /* --- EL CONTADOR --- */
@@ -94,11 +95,11 @@
         #mensaje-final {
             display: none;
             font-family: 'Times New Roman', serif;
-            font-size: 12vw; /* Un poco más grande para celebrar el año */
+            font-size: 12vw; 
             text-transform: uppercase;
             letter-spacing: 0.1em;
             text-align: center;
-            animation: popIn 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efecto "Pop" festivo */
+            animation: popIn 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: absolute;
             top: 50%;
             left: 50%;
@@ -112,7 +113,7 @@
             100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
-        /* --- NIEVE 2D (Suave y elegante) --- */
+        /* --- NIEVE 2D --- */
         .snowflake {
             position: absolute;
             pointer-events: none;
@@ -120,15 +121,47 @@
         }
 
         @keyframes snowfall-smooth {
-            0% {
-                transform: translateY(-20vh) translateX(0) rotate(0deg);
-                opacity: 0;
-            }
+            0% { transform: translateY(-20vh) translateX(0) rotate(0deg); opacity: 0; }
             10% { opacity: var(--opacity-val); }
-            100% {
-                transform: translateY(120vh) translateX(var(--sway)) rotate(360deg);
-                opacity: 0.2;
-            }
+            100% { transform: translateY(120vh) translateX(var(--sway)) rotate(360deg); opacity: 0.2; }
+        }
+
+        /* --- BRILLITOS (SPARKLES) EN LOS NÚMEROS --- */
+        .sparkle {
+            position: absolute;
+            width: 2vw; /* Tamaño del brillo relativo a la pantalla */
+            height: 2vw;
+            background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 20; /* Encima de los números */
+            opacity: 0;
+            animation: twinkle 1.5s ease-in-out forwards;
+            mix-blend-mode: overlay; /* Se mezcla bonito con el negro */
+        }
+
+        /* Forma de estrella para el brillo usando CSS */
+        .sparkle::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 0; right: 0; height: 10%;
+            background: white;
+            transform: translateY(-50%);
+            box-shadow: 0 0 10px white;
+        }
+        .sparkle::before {
+            content: '';
+            position: absolute;
+            left: 50%; top: 0; bottom: 0; width: 10%;
+            background: white;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px white;
+        }
+
+        @keyframes twinkle {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(45deg); opacity: 1; }
+            100% { transform: scale(0) rotate(90deg); opacity: 0; }
         }
 
     </style>
@@ -138,7 +171,7 @@
     <div class="container" id="main-container">
         <div class="label-top">FALTAN</div>
         
-        <div class="counter-wrapper">
+        <div class="counter-wrapper" id="counter-box">
             <div class="digit-group">
                 <span id="hours" class="number">0</span>
             </div>
@@ -156,119 +189,119 @@
             </div>
         </div>
 
-        <div class="label-bottom">PARA EL <span id="year-label">2026</span></div>
+        <div class="label-bottom" id="dynamic-label">PARA EL 2026</div>
     </div>
 
-    <div id="mensaje-final">
-        ¡Feliz 2026!
-    </div>
+    <div id="mensaje-final">¡FELIZ 2026!</div>
 
     <script>
-        // --- 1. CONFIGURACIÓN NIEVE ---
-        const snowflakeImages = [
-            'tailpiece1-1600 2.png',
-            'tailpiece1-1600 3.png',
-            'tailpiece1-1600 6.png',
-            'tailpiece1-1600 7.png',
-            'tailpiece1-1600 9.png'
-        ];
-
+        // --- 1. NIEVE (Igual que antes) ---
+        const snowflakeImages = ['tailpiece1-1600 2.png', 'tailpiece1-1600 3.png', 'tailpiece1-1600 6.png', 'tailpiece1-1600 7.png', 'tailpiece1-1600 9.png'];
         function createSnowflake(initial = false) {
             const img = document.createElement('img');
             img.src = snowflakeImages[Math.floor(Math.random() * snowflakeImages.length)];
             img.classList.add('snowflake');
-            
             const depth = Math.random(); 
             let size, duration, opacity, blur, zIndex;
-            
-            if (depth > 0.7) { 
-                // PRIMER PLANO
-                size = Math.random() * 70 + 50; 
-                duration = Math.random() * 10 + 10; 
-                opacity = 0.9; 
-                blur = 0; 
-                zIndex = 15; 
-            } else if (depth > 0.3) {
-                // MEDIO
-                size = Math.random() * 40 + 20; 
-                duration = Math.random() * 15 + 15; 
-                opacity = 0.7; 
-                blur = '2px'; 
-                zIndex = 5; 
-            } else {
-                // FONDO
-                size = Math.random() * 20 + 10; 
-                duration = Math.random() * 20 + 20; 
-                opacity = 0.4; 
-                blur = '4px'; 
-                zIndex = 1; 
-            }
-
-            img.style.width = size + 'px';
-            img.style.left = Math.random() * 100 + 'vw';
-            img.style.zIndex = zIndex;
-            img.style.filter = `blur(${blur})`; 
-            
-            img.style.animationName = 'snowfall-smooth';
-            img.style.animationDuration = duration + 's';
-            img.style.animationTimingFunction = 'linear';
-            
-            const sway = (Math.random() * 100 - 50) + 'px';
-            img.style.setProperty('--sway', sway);
-            img.style.setProperty('--opacity-val', opacity);
-
-            if (initial) {
-                img.style.top = Math.random() * 100 + 'vh';
-                img.style.animationDelay = '0s';
-            } else {
-                img.style.top = '-150px';
-                img.style.animationDelay = '0s';
-            }
-            
+            if (depth > 0.7) { size = Math.random() * 70 + 50; duration = Math.random() * 10 + 10; opacity = 0.9; blur = 0; zIndex = 15; }
+            else if (depth > 0.3) { size = Math.random() * 40 + 20; duration = Math.random() * 15 + 15; opacity = 0.7; blur = '2px'; zIndex = 5; }
+            else { size = Math.random() * 20 + 10; duration = Math.random() * 20 + 20; opacity = 0.4; blur = '4px'; zIndex = 1; }
+            img.style.width = size + 'px'; img.style.left = Math.random() * 100 + 'vw'; img.style.zIndex = zIndex; img.style.filter = `blur(${blur})`; 
+            img.style.animationName = 'snowfall-smooth'; img.style.animationDuration = duration + 's'; img.style.animationTimingFunction = 'linear';
+            img.style.setProperty('--sway', (Math.random() * 100 - 50) + 'px'); img.style.setProperty('--opacity-val', opacity);
+            if (initial) { img.style.top = Math.random() * 100 + 'vh'; img.style.animationDelay = '0s'; } else { img.style.top = '-150px'; img.style.animationDelay = '0s'; }
             document.body.appendChild(img);
             setTimeout(() => { img.remove(); }, (duration + 1) * 1000);
         }
-
-        // LLENADO INICIAL
         for(let i=0; i<50; i++) createSnowflake(true);
-
-        // GENERACIÓN CONTINUA
         setInterval(() => createSnowflake(false), 250);
 
-
-        // --- 2. LÓGICA DEL CONTADOR ---
+        // --- 2. CONTADOR ---
         const nextYear = new Date().getFullYear() + 1;
-        // Actualizamos dinámicamente el texto pequeño "PARA EL 2026"
-        document.getElementById('year-label').innerText = nextYear;
-        // Y el mensaje final también por si acaso cambia el año en el futuro
         document.getElementById('mensaje-final').innerText = "¡FELIZ " + nextYear + "!";
-        
         const newYearTime = new Date(`January 01 ${nextYear} 00:00:00`);
-
         function updateCountdown() {
             const currentTime = new Date();
             const diff = newYearTime - currentTime;
-
             if (diff <= 0) {
-                // AQUÍ OCURRE EL CAMBIO AUTOMÁTICO
                 document.getElementById('main-container').style.display = 'none';
                 document.getElementById('mensaje-final').style.display = 'block';
-                // Aumentamos la nieve para festejar
                 setInterval(() => createSnowflake(false), 50); 
                 return;
             }
-
             const h = Math.floor((diff / 1000 / 60 / 60) % 24);
             const m = Math.floor((diff / 1000 / 60) % 60);
             const s = Math.floor((diff / 1000) % 60);
-
             document.getElementById('hours').innerText = h; 
             document.getElementById('minutes').innerText = m < 10 ? '0' + m : m;
             document.getElementById('seconds').innerText = s < 10 ? '0' + s : s;
         }
-
         setInterval(updateCountdown, 1000);
         updateCountdown();
+
+        // --- 3. NUEVO: FRASES ROTATIVAS (Deseos) ---
+        const labelBottom = document.getElementById('dynamic-label');
+        const defaultText = `PARA EL ${nextYear}`;
+        
+        // ¡EDITA TUS FRASES AQUÍ!
+        const wishes = [
+            "POR MÁS VIAJES",
+            "MUCHA SALUD",
+            "AMOR Y PAZ",
+            "NUEVOS PROYECTOS",
+            "ALEGRÍA EN FAMILIA",
+            "MOMENTOS ÚNICOS"
+        ];
+
+        let wishIndex = 0;
+        
+        function rotateText() {
+            // Paso 1: Fade Out
+            labelBottom.style.opacity = 0;
+            
+            setTimeout(() => {
+                // Paso 2: Cambiar texto (Alternar entre Default y Deseo)
+                if (labelBottom.innerText === defaultText) {
+                    labelBottom.innerText = wishes[wishIndex];
+                    wishIndex = (wishIndex + 1) % wishes.length; // Siguiente deseo
+                } else {
+                    labelBottom.innerText = defaultText;
+                }
+                
+                // Paso 3: Fade In
+                labelBottom.style.opacity = 1;
+            }, 1000); // Espera 1 segundo mientras está invisible
+        }
+
+        // Cambiar texto cada 8 segundos
+        setInterval(rotateText, 8000);
+
+        // --- 4. NUEVO: BRILLOS EN LOS NÚMEROS (Sparkles) ---
+        const counterBox = document.getElementById('counter-box');
+
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.classList.add('sparkle');
+            
+            // Posición aleatoria DENTRO del área de los números
+            // Usamos porcentajes relativos al contenedor
+            const randomX = Math.random() * 80 + 10; // Entre 10% y 90% ancho
+            const randomY = Math.random() * 60 + 20; // Entre 20% y 80% alto
+            
+            sparkle.style.left = randomX + '%';
+            sparkle.style.top = randomY + '%';
+            
+            counterBox.appendChild(sparkle);
+            
+            // Eliminar después de la animación
+            setTimeout(() => {
+                sparkle.remove();
+            }, 1500);
+        }
+
+        // Crear un brillo cada 2 segundos aprox
+        setInterval(createSparkle, 2000);
+
     </script>
 </body>
 </html>
