@@ -39,7 +39,6 @@
             font-size: 1.5vw; 
             letter-spacing: 0.3em;
             text-transform: uppercase;
-            /* Separación arriba del número */
             margin-bottom: 2vw; 
         }
 
@@ -47,7 +46,7 @@
             font-size: 1.5vw;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            /* AUMENTO DRÁSTICO DE MARGEN SUPERIOR PARA QUE NO SE PISE */
+            /* Mantenemos el margen generoso para que no se pegue */
             margin-top: 8vw; 
             z-index: 10;
         }
@@ -64,7 +63,7 @@
             line-height: 0.8; 
             margin: 0;
             padding-top: 2vw;
-            position: relative; /* Para contener los absolutos si fuera necesario */
+            position: relative;
         }
 
         .digit-group {
@@ -87,34 +86,19 @@
             font-family: "parfumerie-script", sans-serif;
             font-size: 15vw; 
             margin: 0 1vw;
-            /* Ajuste de posición vertical */
             transform: translateY(2vw); 
             opacity: 0.9;
-        }
-
-        /* --- ETIQUETAS HS / MIN / SEG --- */
-        .sub-label {
-            font-family: 'Times New Roman', serif;
-            font-size: 1.2vw;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            position: absolute;
-            /* Las empujamos un poco más abajo del número */
-            bottom: -4vw; 
-            width: 100%;
-            text-align: center;
-            z-index: 3;
         }
 
         /* --- MENSAJE FINAL --- */
         #mensaje-final {
             display: none;
             font-family: 'Times New Roman', serif;
-            font-size: 10vw;
+            font-size: 12vw; /* Un poco más grande para celebrar el año */
             text-transform: uppercase;
             letter-spacing: 0.1em;
             text-align: center;
-            animation: fadeIn 3s ease;
+            animation: popIn 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efecto "Pop" festivo */
             position: absolute;
             top: 50%;
             left: 50%;
@@ -123,19 +107,18 @@
             z-index: 20;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        @keyframes popIn {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
-        /* --- NIEVE 2D MEJORADA (Elegante y Fluida) --- */
+        /* --- NIEVE 2D (Suave y elegante) --- */
         .snowflake {
             position: absolute;
             pointer-events: none;
             will-change: transform;
         }
 
-        /* Animación suave: Caída + Balanceo lateral + Rotación 2D */
         @keyframes snowfall-smooth {
             0% {
                 transform: translateY(-20vh) translateX(0) rotate(0deg);
@@ -143,7 +126,6 @@
             }
             10% { opacity: var(--opacity-val); }
             100% {
-                /* Cae hasta abajo, se mueve lateralmente y gira 360 grados */
                 transform: translateY(120vh) translateX(var(--sway)) rotate(360deg);
                 opacity: 0.2;
             }
@@ -159,29 +141,26 @@
         <div class="counter-wrapper">
             <div class="digit-group">
                 <span id="hours" class="number">0</span>
-                <div class="sub-label">HS</div>
             </div>
 
             <div class="separator">:</div>
 
             <div class="digit-group">
                 <span id="minutes" class="number">00</span>
-                <div class="sub-label">MIN</div>
             </div>
 
             <div class="separator">:</div>
 
             <div class="digit-group">
                 <span id="seconds" class="number">00</span>
-                <div class="sub-label">SEG</div>
             </div>
         </div>
 
-        <div class="label-bottom">PARA EL <span id="year">2026</span></div>
+        <div class="label-bottom">PARA EL <span id="year-label">2026</span></div>
     </div>
 
     <div id="mensaje-final">
-        ¡FELIZ AÑO NUEVO!
+        ¡Feliz 2026!
     </div>
 
     <script>
@@ -199,51 +178,45 @@
             img.src = snowflakeImages[Math.floor(Math.random() * snowflakeImages.length)];
             img.classList.add('snowflake');
             
-            // --- PROFUNDIDAD VISUAL (Sin 3D real, solo trucos ópticos) ---
             const depth = Math.random(); 
-            
             let size, duration, opacity, blur, zIndex;
             
             if (depth > 0.7) { 
-                // === PRIMER PLANO (Grandes y Nítidos) ===
-                size = Math.random() * 70 + 50; // 50px a 120px
-                duration = Math.random() * 10 + 10; // 10s a 20s
+                // PRIMER PLANO
+                size = Math.random() * 70 + 50; 
+                duration = Math.random() * 10 + 10; 
                 opacity = 0.9; 
                 blur = 0; 
                 zIndex = 15; 
             } else if (depth > 0.3) {
-                // === MEDIO (Normales) ===
+                // MEDIO
                 size = Math.random() * 40 + 20; 
                 duration = Math.random() * 15 + 15; 
                 opacity = 0.7; 
-                blur = '2px'; // Un poco borroso
+                blur = '2px'; 
                 zIndex = 5; 
             } else {
-                // === FONDO (Pequeños y muy borrosos/Bokeh) ===
+                // FONDO
                 size = Math.random() * 20 + 10; 
-                duration = Math.random() * 20 + 20; // Caen muy lento
+                duration = Math.random() * 20 + 20; 
                 opacity = 0.4; 
-                blur = '4px'; // Muy borroso
+                blur = '4px'; 
                 zIndex = 1; 
             }
 
-            // Aplicar estilos
             img.style.width = size + 'px';
             img.style.left = Math.random() * 100 + 'vw';
             img.style.zIndex = zIndex;
-            img.style.filter = `blur(${blur})`; // EFECTO DE LENTE
+            img.style.filter = `blur(${blur})`; 
             
-            // Animación
             img.style.animationName = 'snowfall-smooth';
             img.style.animationDuration = duration + 's';
             img.style.animationTimingFunction = 'linear';
             
-            // Balanceo lateral aleatorio (-50px a +50px)
             const sway = (Math.random() * 100 - 50) + 'px';
             img.style.setProperty('--sway', sway);
             img.style.setProperty('--opacity-val', opacity);
 
-            // Inicio
             if (initial) {
                 img.style.top = Math.random() * 100 + 'vh';
                 img.style.animationDelay = '0s';
@@ -256,16 +229,20 @@
             setTimeout(() => { img.remove(); }, (duration + 1) * 1000);
         }
 
-        // --- LLENADO INICIAL (Para que no esté vacío al abrir) ---
+        // LLENADO INICIAL
         for(let i=0; i<50; i++) createSnowflake(true);
 
-        // --- GENERACIÓN CONTINUA ---
+        // GENERACIÓN CONTINUA
         setInterval(() => createSnowflake(false), 250);
 
 
         // --- 2. LÓGICA DEL CONTADOR ---
         const nextYear = new Date().getFullYear() + 1;
-        document.getElementById('year').innerText = nextYear;
+        // Actualizamos dinámicamente el texto pequeño "PARA EL 2026"
+        document.getElementById('year-label').innerText = nextYear;
+        // Y el mensaje final también por si acaso cambia el año en el futuro
+        document.getElementById('mensaje-final').innerText = "¡FELIZ " + nextYear + "!";
+        
         const newYearTime = new Date(`January 01 ${nextYear} 00:00:00`);
 
         function updateCountdown() {
@@ -273,8 +250,10 @@
             const diff = newYearTime - currentTime;
 
             if (diff <= 0) {
+                // AQUÍ OCURRE EL CAMBIO AUTOMÁTICO
                 document.getElementById('main-container').style.display = 'none';
                 document.getElementById('mensaje-final').style.display = 'block';
+                // Aumentamos la nieve para festejar
                 setInterval(() => createSnowflake(false), 50); 
                 return;
             }
