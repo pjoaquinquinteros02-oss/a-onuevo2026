@@ -14,10 +14,10 @@
             background-color: #FAEAA8; /* Tu color exacto */
             overflow: hidden;
             height: 100vh;
+            width: 100vw;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            /* Times New Roman para textos generales por defecto */
+            justify-content: center; /* Centrado horizontal */
+            align-items: center;     /* Centrado vertical */
             font-family: 'Times New Roman', Times, serif; 
             color: #000;
         }
@@ -31,6 +31,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            /* Aseguramos que tenga espacio suficiente */
+            width: 90%; 
+            max-width: 1200px;
         }
 
         /* --- TEXTOS PEQUEÑOS (FALTAN / PARA EL 2026) --- */
@@ -38,7 +41,7 @@
             font-size: 1.5vw; 
             letter-spacing: 0.3em;
             text-transform: uppercase;
-            margin-bottom: -2vw; /* Acercamos el texto al número */
+            margin-bottom: -2vw;
             position: relative;
             top: 1vw;
         }
@@ -55,14 +58,15 @@
             display: flex;
             align-items: baseline;
             justify-content: center;
-            /* AQUÍ USAMOS TU FUENTE DE ADOBE */
             font-family: "parfumerie-script", sans-serif; 
             font-weight: 400;
             font-style: normal;
-            font-size: 28vw; /* Tamaño gigante ajustado */
+            font-size: 28vw; 
             line-height: 1;
             margin: 0;
-            padding-top: 2vw; /* Espacio para que no corte la parte superior de la cursiva */
+            /* Ajuste clave para que no se corte */
+            padding: 2vw 1vw 0 1vw; 
+            width: 100%; /* Usa todo el ancho disponible del contenedor */
         }
 
         .digit-group {
@@ -70,6 +74,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            /* Un poco de espacio extra para los números cursivos anchos */
+            padding: 0 0.5vw;
         }
 
         /* Los dos puntos : */
@@ -77,14 +83,14 @@
             font-family: "parfumerie-script", sans-serif;
             font-size: 15vw;
             margin: 0 0.5vw;
-            transform: translateY(-3vw); /* Ajuste de altura de los dos puntos */
+            transform: translateY(-3vw);
         }
 
         /* --- ETIQUETAS HS / MIN / SEG --- */
         .sub-label {
             position: absolute;
             bottom: 3vw; 
-            font-family: 'Times New Roman', serif; /* Times New Roman para estas etiquetas */
+            font-family: 'Times New Roman', serif;
             font-size: 1vw;
             letter-spacing: 0.1em;
             text-transform: uppercase;
@@ -105,20 +111,26 @@
             letter-spacing: 0.1em;
             text-align: center;
             animation: fadeIn 3s ease;
+            /* Asegurar centrado del mensaje final */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.95); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
         /* --- NIEVE (IMÁGENES) --- */
         .snowflake {
             position: absolute;
-            top: -150px; /* Empiezan más arriba para no aparecer de golpe */
+            top: -150px;
             z-index: 1;
             opacity: 0.9;
-            pointer-events: none; /* Click a través de la nieve */
+            pointer-events: none;
             animation: fall linear infinite;
         }
 
@@ -160,25 +172,39 @@
         <div class="label-bottom">PARA EL <span id="year">2026</span></div>
     </div>
 
-    <div class="container" id="mensaje-final">
+    <div id="mensaje-final">
         ¡FELIZ AÑO NUEVO!
     </div>
 
     <script>
-        // --- 1. CONFIGURACIÓN NIEVE ---
+        // --- 1. CONFIGURACIÓN NIEVE CON TUS IMÁGENES ---
+        
+        // Array con los nombres exactos de tus archivos
+        const snowflakeImages = [
+            'tailpiece1-1600 2.png',
+            'tailpiece1-1600 3.png',
+            'tailpiece1-1600 6.png',
+            'tailpiece1-1600 7.png',
+            'tailpiece1-1600 9.png'
+        ];
+
         function createSnowflake() {
             const img = document.createElement('img');
-            img.src = 'copo.png'; // Asegúrate que tu imagen se llame así
+            
+            // Elegir una imagen al azar del array
+            const randomImage = snowflakeImages[Math.floor(Math.random() * snowflakeImages.length)];
+            img.src = randomImage;
+            
             img.classList.add('snowflake');
             
-            // Tamaños variados (un poco más grandes para que se luzcan)
+            // Tamaños variados
             const size = Math.random() * 60 + 20; 
             img.style.width = size + 'px';
             
             // Posición horizontal aleatoria
             img.style.left = Math.random() * 100 + 'vw';
             
-            // Velocidad LENTA (entre 15 y 25 segundos en caer)
+            // Velocidad LENTA
             const duration = Math.random() * 10 + 15; 
             img.style.animationDuration = duration + 's';
             
@@ -190,11 +216,11 @@
             }, duration * 1000);
         }
 
-        // Frecuencia de nieve (cada 400ms sale un copo nuevo)
+        // Frecuencia de nieve
         setInterval(createSnowflake, 400);
 
 
-        // --- 2. LÓGICA DEL CONTADOR ---
+        // --- 2. LÓGICA DEL CONTADOR (Igual que antes) ---
         const nextYear = new Date().getFullYear() + 1;
         document.getElementById('year').innerText = nextYear;
         // FECHA OBJETIVO: 1 de Enero 00:00:00
@@ -215,6 +241,8 @@
                 // CUANDO LLEGA A CERO
                 container.style.display = 'none';
                 msg.style.display = 'block';
+                // Nieve extra al final
+                setInterval(createSnowflake, 100);
                 return;
             }
 
@@ -223,7 +251,7 @@
             const s = Math.floor((diff / 1000) % 60);
 
             // Actualizar texto con ceros a la izquierda
-            hEl.innerText = h; // Las horas a veces quedan mejor sin el 0 si es un solo dígito, pero puedes poner h < 10 ? '0' + h : h;
+            hEl.innerText = h; 
             mEl.innerText = m < 10 ? '0' + m : m;
             sEl.innerText = s < 10 ? '0' + s : s;
         }
