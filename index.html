@@ -2,125 +2,217 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Cuenta Regresiva Año Nuevo</title>
+    <title>Cuenta Regresiva 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
+    
     <style>
+        /* --- FUENTES --- */
+        @font-face {
+            font-family: 'Parfumerie Script';
+            src: url('Parfumerie.otf'); /* Asegúrate que el nombre coincida con tu archivo */
+        }
+
+        /* --- ESTILOS GENERALES --- */
         body {
             margin: 0;
             padding: 0;
+            background-color: #FAEAA8; /* Tu color exacto */
             overflow: hidden;
-            background-color: #000;
-            /* Aquí cargamos tu imagen de fondo */
-            background-image: url('fondo.jpg'); 
-            background-size: cover;
-            background-position: center;
-            font-family: 'Arial', sans-serif; /* Puedes cambiar esto */
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            color: white;
+            font-family: 'Times New Roman', Times, serif;
+            color: #000; /* Color del texto */
         }
 
-        /* El contenedor del contador */
-        #contador {
-            font-size: 15vw; /* Tamaño gigante responsivo */
-            font-weight: bold;
-            text-shadow: 0 0 20px rgba(0,0,0,0.5);
-            z-index: 10;
-        }
-
-        /* Mensaje final */
-        #mensaje {
-            display: none;
-            font-size: 10vw;
+        /* Contenedor Principal Centrado */
+        .container {
             text-align: center;
-            animation: popIn 1s ease forwards;
             z-index: 10;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        @keyframes popIn {
-            0% { transform: scale(0); opacity: 0; }
-            80% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
+        /* --- TEXTOS PEQUEÑOS (FALTAN / PARA EL 2026) --- */
+        .label-top {
+            font-size: 1.5vw; /* Escala con la pantalla */
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            margin-bottom: -1vw; /* Ajuste para acercarlo a los números */
         }
 
-        /* --- EFECTO DE NIEVE (CSS PURO) --- */
+        .label-bottom {
+            font-size: 1.5vw;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-top: 2vw;
+        }
+
+        /* --- EL CONTADOR (NÚMEROS) --- */
+        .counter-wrapper {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            font-family: 'Parfumerie Script', 'Pinyon Script', cursive; /* Usa tu fuente o la alternativa */
+            font-size: 25vw; /* TAMAÑO GIGANTE como en tu diseño */
+            line-height: 1;
+            margin: 0;
+        }
+
+        .digit-group {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Los dos puntos : */
+        .separator {
+            font-size: 15vw;
+            margin: 0 1vw;
+            transform: translateY(-2vw); /* Subir un poco los dos puntos */
+        }
+
+        /* --- ETIQUETAS HS / MIN / SEG --- */
+        /* Estas van DEBAJO de los números, pequeñas como en tu diseño */
+        .sub-label {
+            position: absolute;
+            bottom: 2vw; /* Ajusta esto para subirlas o bajarlas */
+            font-family: 'Times New Roman', serif;
+            font-size: 1vw;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            width: 100%;
+            text-align: center;
+        }
+        
+        /* Ajuste específico para que las etiquetas no se superpongan al número cursivo */
+        .digit-group span {
+            z-index: 2;
+        }
+
+        /* --- MENSAJE FINAL --- */
+        #mensaje-final {
+            display: none;
+            font-family: 'Times New Roman', serif;
+            font-size: 8vw;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            animation: fadeIn 2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- NIEVE (IMÁGENES) --- */
         .snowflake {
             position: absolute;
-            top: -10px;
-            color: white;
-            font-size: 1em;
-            font-family: Arial;
-            text-shadow: 0 0 1px #000;
-            user-select: none;
+            top: -100px;
             z-index: 1;
-            animation-name: snowfall;
-            animation-timing-function: linear;
-            animation-iteration-count: infinite;
+            opacity: 0.8;
+            pointer-events: none;
+            animation: fall linear infinite;
         }
 
-        @keyframes snowfall {
-            0% { transform: translateY(-10vh) translateX(0); opacity: 1; }
-            100% { transform: translateY(110vh) translateX(20px); opacity: 0.8; }
+        @keyframes fall {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(110vh) rotate(360deg); }
         }
 
-        /* Capa oscura opcional para que se lean mejor los números */
-        .overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.3); /* Ajusta la opacidad aquí */
-            z-index: 0;
-        }
     </style>
 </head>
 <body>
 
-    <div class="overlay"></div>
-    <div id="contador">00:00:00</div>
-    <div id="mensaje">¡FELIZ<br>AÑO NUEVO!</div>
+    <div id="snow-container"></div>
+
+    <div class="container" id="main-container">
+        <div class="label-top">FALTAN</div>
+        
+        <div class="counter-wrapper">
+            <div class="digit-group">
+                <span id="hours">0</span>
+                <div class="sub-label">HS</div>
+            </div>
+
+            <div class="separator">:</div>
+
+            <div class="digit-group">
+                <span id="minutes">00</span>
+                <div class="sub-label">MIN</div>
+            </div>
+
+            <div class="separator">:</div>
+
+            <div class="digit-group">
+                <span id="seconds">00</span>
+                <div class="sub-label">SEG</div>
+            </div>
+        </div>
+
+        <div class="label-bottom">PARA EL <span id="year">2026</span></div>
+    </div>
+
+    <div class="container" id="mensaje-final">
+        ¡FELIZ AÑO NUEVO!
+    </div>
 
     <script>
-        // --- CONFIGURACIÓN DE LA NIEVE ---
-        function createSnow() {
-            const snowContainer = document.body;
-            const snowflake = document.createElement('div');
-            snowflake.innerHTML = '❄'; // Puedes cambiar esto por un punto '•' si prefieres minimalismo
-            snowflake.classList.add('snowflake');
+        // --- 1. CONFIGURACIÓN NIEVE ---
+        function createSnowflake() {
+            const img = document.createElement('img');
+            img.src = 'copo.png'; // IMPORTANTE: Tu imagen debe llamarse así
+            img.classList.add('snowflake');
             
-            // Aleatoriedad
-            snowflake.style.left = Math.random() * 100 + 'vw';
-            snowflake.style.fontSize = (Math.random() * 20 + 10) + 'px'; // Tamaño entre 10 y 30px
-            snowflake.style.animationDuration = (Math.random() * 5 + 5) + 's'; // Velocidad entre 5 y 10s
-            snowflake.style.opacity = Math.random();
+            // Tamaños variados para profundidad
+            const size = Math.random() * 50 + 30; // Entre 30px y 80px
+            img.style.width = size + 'px';
             
-            snowContainer.appendChild(snowflake);
+            // Posición horizontal aleatoria
+            img.style.left = Math.random() * 100 + 'vw';
+            
+            // Velocidad aleatoria (LENTO como pediste)
+            const duration = Math.random() * 10 + 10; // Entre 10 y 20 segundos
+            img.style.animationDuration = duration + 's';
+            
+            document.body.appendChild(img);
 
-            // Eliminar el copo cuando termine de caer para no saturar la memoria
+            // Eliminar al terminar para no saturar
             setTimeout(() => {
-                snowflake.remove();
-            }, 10000);
+                img.remove();
+            }, duration * 1000);
         }
 
-        // Crear un copo cada 100 milisegundos
-        setInterval(createSnow, 100);
+        // Crear un copo cada 500ms (ajusta para más o menos nieve)
+        setInterval(createSnowflake, 500);
 
-        // --- LÓGICA DEL CONTADOR ---
-        const contadorElement = document.getElementById('contador');
-        const mensajeElement = document.getElementById('mensaje');
 
-        // FECHA OBJETIVO: 1 de Enero del próximo año a las 00:00:00
-        const currentYear = new Date().getFullYear();
-        const nextYear = currentYear + 1;
+        // --- 2. LÓGICA DEL CONTADOR ---
+        const nextYear = new Date().getFullYear() + 1;
+        document.getElementById('year').innerText = nextYear;
         const newYearTime = new Date(`January 01 ${nextYear} 00:00:00`);
 
         function updateCountdown() {
             const currentTime = new Date();
             const diff = newYearTime - currentTime;
 
+            // Elementos DOM
+            const hEl = document.getElementById('hours');
+            const mEl = document.getElementById('minutes');
+            const sEl = document.getElementById('seconds');
+            const container = document.getElementById('main-container');
+            const msg = document.getElementById('mensaje-final');
+
             if (diff <= 0) {
-                // Llegó el año nuevo
-                contadorElement.style.display = 'none';
-                mensajeElement.style.display = 'block';
+                container.style.display = 'none';
+                msg.style.display = 'flex';
+                // Efecto extra: mucha nieve al final
+                setInterval(createSnowflake, 100); 
                 return;
             }
 
@@ -128,16 +220,14 @@
             const m = Math.floor((diff / 1000 / 60) % 60);
             const s = Math.floor((diff / 1000) % 60);
 
-            // Formato con ceros a la izquierda
-            const hStr = h < 10 ? '0' + h : h;
-            const mStr = m < 10 ? '0' + m : m;
-            const sStr = s < 10 ? '0' + s : s;
-
-            contadorElement.innerText = `${hStr}:${mStr}:${sStr}`;
+            // Actualizar texto
+            hEl.innerText = h < 10 ? '0' + h : h; // Agrega cero si es menor a 10
+            mEl.innerText = m < 10 ? '0' + m : m;
+            sEl.innerText = s < 10 ? '0' + s : s;
         }
 
         setInterval(updateCountdown, 1000);
-        updateCountdown(); // Ejecutar una vez al inicio
+        updateCountdown();
     </script>
 </body>
 </html>
