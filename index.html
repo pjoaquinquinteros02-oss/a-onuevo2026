@@ -48,8 +48,8 @@
             text-transform: uppercase;
             margin-top: 8vw; 
             z-index: 10;
-            min-height: 1.5vw; /* Reserva espacio para evitar saltos */
-            transition: opacity 1s ease-in-out; /* Fade suave para el texto */
+            min-height: 1.5vw;
+            transition: opacity 1s ease-in-out;
         }
 
         /* --- EL CONTADOR --- */
@@ -154,10 +154,10 @@
         <div class="label-bottom" id="dynamic-label">PARA EL 2026</div>
     </div>
 
-    <div id="mensaje-final">¡Feliz 2026!</div>
+    <div id="mensaje-final">¡FELIZ 2026!</div>
 
     <script>
-        // --- 1. NIEVE (Igual que antes) ---
+        // --- 1. NIEVE ---
         const snowflakeImages = ['tailpiece1-1600 2.png', 'tailpiece1-1600 3.png', 'tailpiece1-1600 6.png', 'tailpiece1-1600 7.png', 'tailpiece1-1600 9.png'];
         function createSnowflake(initial = false) {
             const img = document.createElement('img');
@@ -178,65 +178,108 @@
         for(let i=0; i<50; i++) createSnowflake(true);
         setInterval(() => createSnowflake(false), 250);
 
-        // --- 2. CONTADOR ---
-        const nextYear = new Date().getFullYear() + 1;
-        document.getElementById('mensaje-final').innerText = "¡FELIZ " + nextYear + "!";
-        const newYearTime = new Date(`January 01 ${nextYear} 00:00:00`);
+        // --- 2. LÓGICA DEL CONTADOR (BLINDADA) ---
+        
+        // Obtenemos la fecha actual
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth(); // 0 = Enero, 11 = Diciembre
+        const currentDay = now.getDate();
+
+        let targetYear = currentYear + 1;
+        let showHappyNewYearNow = false;
+
+        // SEGURIDAD: Si estamos en Enero (mes 0) y día 1, es que YA es año nuevo.
+        // No importa si refrescas la página, debe mostrar el mensaje.
+        if (currentMonth === 0 && currentDay === 1) {
+            showHappyNewYearNow = true;
+            targetYear = currentYear; // Para que el texto diga el año correcto
+        }
+
+        // Texto del año dinámico
+        document.getElementById('mensaje-final').innerText = "¡FELIZ " + targetYear + "!";
+        const labelBottom = document.getElementById('dynamic-label');
+        const defaultText = `PARA EL ${targetYear}`;
+        labelBottom.innerText = defaultText;
+
+        // Fecha objetivo exacta (Usamos constructor seguro Año, Mes, Día, Hora, Min, Seg)
+        // Mes 0 es Enero.
+        const newYearTime = new Date(targetYear, 0, 1, 0, 0, 0);
+
         function updateCountdown() {
-            const currentTime = new Date();
-            const diff = newYearTime - currentTime;
-            if (diff <= 0) {
-                document.getElementById('main-container').style.display = 'none';
-                document.getElementById('mensaje-final').style.display = 'block';
-                setInterval(() => createSnowflake(false), 50); 
+            // Si detectamos que YA es 1 de enero, forzamos el final inmediatamente
+            if (showHappyNewYearNow) {
+                showEndScreen();
                 return;
             }
+
+            const currentTime = new Date();
+            let diff = newYearTime - currentTime;
+
+            // Si llegamos a cero (o pasamos por milésimas)
+            if (diff <= 0) {
+                showEndScreen();
+                return;
+            }
+
+            // Cálculos
             const h = Math.floor((diff / 1000 / 60 / 60) % 24);
             const m = Math.floor((diff / 1000 / 60) % 60);
             const s = Math.floor((diff / 1000) % 60);
+
+            // Actualizar pantalla
             document.getElementById('hours').innerText = h; 
             document.getElementById('minutes').innerText = m < 10 ? '0' + m : m;
             document.getElementById('seconds').innerText = s < 10 ? '0' + s : s;
         }
-        setInterval(updateCountdown, 1000);
-        updateCountdown();
 
-        // --- 3. FRASES ROTATIVAS (Deseos) ---
-        const labelBottom = document.getElementById('dynamic-label');
-        const defaultText = `PARA EL ${nextYear}`;
-        
-        // ¡EDITA TUS FRASES AQUÍ!
+        // Función auxiliar para mostrar la pantalla final y detener todo
+        let animationStarted = false;
+        function showEndScreen() {
+            document.getElementById('main-container').style.display = 'none';
+            document.getElementById('mensaje-final').style.display = 'block';
+            
+            // Intensificar nieve una sola vez para no saturar
+            if (!animationStarted) {
+                setInterval(() => createSnowflake(false), 50); 
+                animationStarted = true;
+            }
+        }
+
+        // --- 3. FRASES ROTATIVAS ---
         const wishes = [
-            "POR MÁS VIAJES",
-            "MUCHA SALUD",
-            "AMOR Y PAZ",
-            "NUEVOS PROYECTOS",
-            "ALEGRÍA EN FAMILIA",
-            "MOMENTOS ÚNICOS"
+            "PARA QUE TOTO ESTRENE MAS OBRAS",
+            "PARA QUE JOACO VEA A ROSALÍA",
+            "PARA QUE GASTI SALGA DEL PAIS",
+            "PARA QUE LENA PROTAGONICE UN MUSICAL",
+            "PARA QUE KAREN TENGA EL LABURO DE SUS SUEÑOS",
+            "PARA QUE IÑA SEA INFLUENCER",
+            "PARA QUE NICO SE RECIBA"
         ];
-
         let wishIndex = 0;
         
         function rotateText() {
-            // Paso 1: Fade Out
+            // Si ya terminó el conteo, no rotamos más textos
+            if(document.getElementById('main-container').style.display === 'none') return;
+
             labelBottom.style.opacity = 0;
-            
             setTimeout(() => {
-                // Paso 2: Cambiar texto (Alternar entre Default y Deseo)
                 if (labelBottom.innerText === defaultText) {
                     labelBottom.innerText = wishes[wishIndex];
-                    wishIndex = (wishIndex + 1) % wishes.length; // Siguiente deseo
+                    wishIndex = (wishIndex + 1) % wishes.length;
                 } else {
                     labelBottom.innerText = defaultText;
                 }
-                
-                // Paso 3: Fade In
                 labelBottom.style.opacity = 1;
-            }, 1000); // Espera 1 segundo mientras está invisible
+            }, 1000);
         }
 
-        // Cambiar texto cada 8 segundos
+        // Iniciar intervalos
+        setInterval(updateCountdown, 1000);
         setInterval(rotateText, 8000);
+        
+        // Ejecutar una vez al inicio para evitar parpadeos
+        updateCountdown(); 
 
     </script>
 </body>
